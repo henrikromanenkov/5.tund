@@ -1,12 +1,14 @@
 <?php
-									//mvp: Tahaksin teha midagi Instagram'i laadset.
-	//echo$_POST["email"];
-	//echo$_POST["password"];
 	
 	require_once("function.php");
 	
-	//muutujad errorite jaoks
+	//kui kasutaja on issse loginud; siisi suunan data.php lehele
+	if(isset($_SESSION["logged_in_user_id"])){
+		header("Location: data.php");
+	}
 	
+	
+	//muutujad errorite jaoks
 	$log_email_error = "";
 	$user_email_error = "";
 	$log_password_error = "";
@@ -15,7 +17,6 @@
 	$firstname_error = "";
 	
 	//muutujad ab väärtuste jaoks
-	
 	$log_email = "";
 	$user_email = "";
 	$lastname = "";
@@ -27,7 +28,6 @@
 	if($_SERVER["REQUEST_METHOD"] == "POST"){
 		
 		//echo "Keegi vajutas nuppu";
-		
 		
 		//keegi vajutas login nuppu
 		if(isset($_POST["login"])){
@@ -61,12 +61,6 @@
 				
 
 				// login if end	
-				
-				//kontrollin et ei oleks ühtegi errorit
-			if($log_email_error == ""&& $log_password_error ==""){
-				
-				echo "kontrollin sisselogimist".$log_email." ja parool ";
-				}
 			}
 			
 		
