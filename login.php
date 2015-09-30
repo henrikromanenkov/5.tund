@@ -3,10 +3,7 @@
 	//echo$_POST["email"];
 	//echo$_POST["password"];
 	
-	// Loon andmebaasi ühenduse
-	require_once("../config.php");
-	$database = "if15_henrrom";
-	$mysqli = new mysqli($servername, $username, $password, $database);
+	require_once("function.php");
 	
 	//muutujad errorite jaoks
 	
@@ -50,49 +47,27 @@
 			if(empty($_POST["log_password"]) ){
 				$log_password_error = "See väli on kohustuslik.";
 			}else{
-				$log_password = cleanInput($_POST["password"]);
+				$log_password = cleanInput($_POST["log_password"]);
 			}
 				
 			// Kui oleme siia jõudnud, võime kasutaja sisse logida
-			if($password_error == "" && $email_error == ""){
-				echo "Võib sisse logida! Kasutajanimi on ".$email." ja parool on ".$password;
+			if($log_password_error == "" && $log_email_error == ""){
+				echo "Võib sisse logida! Kasutajanimi on ".$log_email." ja parool on ".$log_password;
 				
-				$hash = hash("sha512", $password);
+				$hash = hash("sha512", $log_password);
 				
-				$stmt = $mysqli->prepare("SELECT id, email FROM user_sample WHERE email=? AND password=?");
-				$stmt->bind_param("ss", $email, $hash);
+				//kasutaja sisselogimise funktsioon failist function.php
+				loginUser($log_email, $hash);
 				
-				//muutujad tulemustele
-				$stmt->bind_result($id_from_db, $email_from_db);
-				$stmt->execute();
-				
-				//kontrolli, kas tulemus leiti
-				if($stmt->fetch()){
-					//ab'i oli midagi
-					echo "Email ja parool õiged, kasutaja id=".$id_from_db;
-					
-				}else{
-					//ei leidnud
-					echo "wrong credentials";
-				}
-				
-				$stmt->close();
-				
-			}
 
-		 // login if end	
+				// login if end	
 				
-				
-			
-			
-			
-			
-			//kontrollin et ei oleks ühtegi errorit
+				//kontrollin et ei oleks ühtegi errorit
 			if($log_email_error == ""&& $log_password_error ==""){
 				
 				echo "kontrollin sisselogimist".$log_email." ja parool ";
+				}
 			}
-			
 			
 		
 		// keegi vajutas create  nuppu
@@ -125,15 +100,11 @@
 				// räsi paroolist, mille salvestame ab'i
 				$hash = hash("sha512", $user_password);
 				
+				//kasutaja sisselogimise funktsioon failist function.php
+				createUser($user_email, $hash);
+				
 				echo "Võib kasutajat luua! Kasutajanimi on ".$user_email." ja parool on ".$user_password. "ja räsi on" .$hash;
-				
-				$stmt = $mysqli->prepare('INSERT INTO user_sample (email, password) VALUES (?, ?)');
-				
-				// asendame küsimärgid. ss - s ons tring email, s on string password
-				
-				$stmt->bind_param("ss", $user_email, $hash);
-				$stmt->execute();
-				$stmt->close();
+			
 			}
 
 			// create if end
@@ -146,7 +117,7 @@
 			}else{
 				//kõik korras
 				//test_input eemaldab pahatahtlikud osad
-				$lastname = test_input($_POST["lastname"]);
+				$lastname = cleanInput($_POST["lastname"]);
 			
 				
 			}
@@ -161,7 +132,7 @@
 			}else{
 				//kõik korras
 				//test_input eemaldab pahatahtlikud osad
-				$firstname = test_input($_POST["firstname"]);
+				$firstname = cleanInput($_POST["firstname"]);
 			
 				
 			}
@@ -176,10 +147,7 @@
 		$data = stripslashes($data);
 		$data = htmlspecialchars($data);
 		return $data;
-		
 	}
-	// paneme ühenduse kinni
-	$mysqli->close();
 ?>  
 <?php
 	$page_title = "Sisselogimise leht";
